@@ -1,0 +1,91 @@
+---
+- name: Configure Application Servers
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Update apt cache & upgrade
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Create a new regular user with sudo privileges
+      user:
+        name: "{{ tf_ansible_username }}"
+        state: present
+        #groups: sudo   # if part of sudo group it will be presented with password challenge
+        append: true
+        create_home: true
+
+    - name: Setup passwordless sudo for remote ansible user
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        line: '%{{ tf_ansible_username }} ALL=(ALL) NOPASSWD: ALL'
+
+    - name: Set authorized key for remote ansible user
+      ansible.posix.authorized_key:
+        user: "{{ tf_ansible_username }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+    - name: Disable password authentication for root
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin prohibit-password'
+
+    - name: Install gpg & zsh
+      apt:
+        pkg:
+          - gnupg2
+          - zsh
+          - curl
+          - git
+
+    - name: Download rvm key 
+      shell: |
+        cd
+        curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+    
+    - name: Install rvm
+      shell: |
+        \curl -sSL https://get.rvm.io | bash
+
+    # - name: Install ruby
+    #   shell: |
+    #     rvm install ruby-3.1.0
+    #     rvm use ruby-3.1.0 --default
+
+    # - name: Install rake
+    #   shell: |
+    #     gem install rake  
+
+    - name: Install Yadr
+      shell: |
+        curl -fsSL https://raw.githubusercontent.com/skwp/dotfiles/master/install.sh
+
+    - name: Allow http access
+      ufw:
+        rule: allow
+        port: http
+        proto: tcp
+
+    - name: Allow https access
+      ufw:
+        rule: allow
+        port: https
+        proto: tcp
+
+    - name: Download Easy Engine
+      shell: |
+        cd
+        pwd
+        wget -qO ee rt.cx/ee4
+        chmod +x ee
+
+    - name: Install Easy Engine
+      shell: |
+        cd
+        bash ./ee

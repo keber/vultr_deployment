@@ -1,0 +1,7 @@
+VULTR_API_KEY = "AAAAABBBBBCCCCCDDDDDEEEE"
+frontend_repo = "keberlabs/keber_cl"
+repo_access_token = "XXXXXXXYYYYYYYYZZZZZ2FOn4G_A=9B25C70A"
+CLOUDFLARE_API_TOKEN = "xxxxxxYYYYYYYZZZZZZ" #edit zone/dns zone/zone all zones
+CLOUDFLARE_ACCOUNT_ID = "abc9090909abc909099abc09090"
+domain = "keber.cl"
+main = "you@mailprovider.com"
