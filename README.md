@@ -5,7 +5,7 @@ This project Deploys a website in Vultr using Terraform and Ansible.
 1. Creates an Ubuntu 22.04 Server in Vultr using Vultr API Key
 2. Configures the system using ansible, including
     * apt update and upgrade
-    * configure passwordless suo ansible user for remote access with ssh key
+    * configure passwordless sudo ansible user for remote access with ssh key
     * installs easy engine
     * creates a site with ssl wildcard
     * validates the ssl using cloudflare DNS
@@ -19,6 +19,7 @@ This project Deploys a website in Vultr using Terraform and Ansible.
 * in your Bitbucket repository, create an Access Token.
 * in your Cloudflare account, create an API Token (prefer "All Zones")
 * Ubuntu Linux system is assumed as command node (WSL works)
+* An id_rsa / id_rsa.pub key pair in your ~/.ssh/ directory 
 
 Install terraform, ansible and git:
 
