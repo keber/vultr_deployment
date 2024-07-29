@@ -47,7 +47,6 @@ CLOUDFLARE_ACCOUNT_ID = "..."
 domain = "yourdomain.com"
 mail = "you@mailprovider.com"
 CLOUDFLARE_GLOBAL_API_KEY = "..."
-
 ```
 
 Then init, plan and apply:
