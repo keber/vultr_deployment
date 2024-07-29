@@ -22,32 +22,13 @@ resource "null_resource" "run_ansible_playbook" {
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${vultr_instance.my_instance.main_ip},' -u root --private-key ${var.ssh_key_path}/${var.private_key} ./ansible/playbook.yml --extra-vars 'tf_ip=${vultr_instance.my_instance.main_ip} tf_ansible_username=${var.ansible_username} tf_frontend_repo=${var.frontend_repo} tf_repo_access_token=${var.repo_access_token}'" #-vvv for verbosity
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${vultr_instance.my_instance.main_ip},' -u root --private-key ${var.ssh_key_path}/${var.private_key} ./ansible/playbook.yml --extra-vars 'tf_ansible_username=${var.ansible_username}'" #-vvv for verbosity
     working_dir = path.module
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${vultr_instance.my_instance.main_ip},' -u ${var.ansible_username} --private-key ${var.ssh_key_path}/${var.private_key} ./ansible/playbook_ee.yml --extra-vars 'tf_ip=${vultr_instance.my_instance.main_ip} tf_ansible_username=${var.ansible_username} tf_frontend_repo=${var.frontend_repo} tf_repo_access_token=${var.repo_access_token} tf_domain=${var.domain} tf_mail=${var.mail}'" #-vvv for verbosity
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${vultr_instance.my_instance.main_ip},' -u ${var.ansible_username} --private-key ${var.ssh_key_path}/${var.private_key} ./ansible/playbook_ee.yml --extra-vars 'tf_ip=${vultr_instance.my_instance.main_ip} tf_ansible_username=${var.ansible_username} tf_frontend_repo=${var.frontend_repo} tf_repo_access_token=${var.repo_access_token} tf_domain=${var.domain} tf_mail=${var.mail} tf_cf_global_api=${var.CLOUDFLARE_GLOBAL_API_KEY}'" #-vvv for verbosity
     working_dir = path.module
   }
 
-}
-
-data "external" "run_ansible_playbook" {    
-  program = ["bash", "-c", "ssh ${var.ansible_username}@${vultr_instance.my_instance.main_ip} -i ${var.ssh_key_path}/${var.private_key} -f \"~/get_validationTXT.sh\"" ]
-  depends_on = [ null_resource.run_ansible_playbook ]
-}
-
-resource "null_resource" "run_ansible_playbook_sslvalidation" {  
-
-  provisioner "local-exec" {
-    command   = "until nc -zv ${vultr_instance.my_instance.main_ip} 22; do echo 'Waiting for SSH to be available...'; sleep 10; done"
-    working_dir = path.module
-  }
-
-  provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${vultr_instance.my_instance.main_ip},' -u ${var.ansible_username} --private-key ${var.ssh_key_path}/${var.private_key} ./ansible/playbook_validation.yml --extra-vars 'tf_ip=${vultr_instance.my_instance.main_ip} tf_ansible_username=${var.ansible_username} tf_frontend_repo=${var.frontend_repo} tf_repo_access_token=${var.repo_access_token} tf_domain=${var.domain} tf_mail=${var.mail}'" #-vvv for verbosity
-    working_dir = path.module
-  }
-  depends_on = [ null_resource.run_ansible_playbook, data.external.run_ansible_playbook ]
 }

@@ -41,6 +41,7 @@ variable "repo_access_token" {
 
 variable "CLOUDFLARE_API_TOKEN" { sensitive = false }
 variable "CLOUDFLARE_ACCOUNT_ID" { sensitive = false }
+variable "CLOUDFLARE_GLOBAL_API_KEY" { sensitive = false }
 
 variable "domain" { type = string} 
 variable "mail" { type = string }
