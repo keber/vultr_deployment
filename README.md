@@ -16,7 +16,7 @@ This project Deploys a website in Vultr using Terraform and Ansible.
 ## Pre-requirements
 
 * Buy/Own a domain. You can buy it in any registrar like namecheap.com or anyother else.
-* in Vultr, [create an API key](). You have the option to attach it to a specific IP address or network (your computer IP address/network).
+* in Vultr, [create an API key](https://docs.vultr.com/how-to-provision-cloud-infrastructure-on-vultr-using-crossplane#enable-your-vultr-account-api-key). You have the option to attach it to a specific IP address or network (your computer IP address/network).
     - You will need this in order to create your VPS in vultr.
 * in your Bitbucket repository, [create an Access Token](https://support.atlassian.com/bitbucket-cloud/docs/create-a-repository-access-token/)
     - You will need this to retrieve the website to show on your domain.
