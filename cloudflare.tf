@@ -1,18 +1,26 @@
 data "cloudflare_zone" "default" {
-    name = var.domain  #mydomain.com
-    account_id = var.CLOUDFLARE_ACCOUNT_ID
+    filter = {
+        name = var.domain  #mydomain.com
+        #status = "active"
+    }
 }
 
-resource "cloudflare_record" "default_A" {
-  zone_id = data.cloudflare_zone.default.id
+resource "cloudflare_dns_record" "default_A" {
+  zone_id = data.cloudflare_zone.default.zone_id
   name    = var.domain
-  value   = vultr_instance.my_instance.main_ip
+  content   = vultr_instance.my_instance.main_ip
   type    = "A"
   proxied = false
+  ttl     = 300
 }
 
+output "zone_id" {
+  value = data.cloudflare_zone.default.id
+}
 
-
+output "var_domain" {
+   value = var.domain
+}
 # resource "cloudflare_record" "default_certvalidation1" {
 #     zone_id = data.cloudflare_zone.default.id
 #     name    =  "_acme-challenge.${var.domain}"
