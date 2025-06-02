@@ -4,57 +4,67 @@
   become: true
 
   tasks:
+    - name: Delete site if it exists
+      shell: |
+        ee site delete {{ tf_ip }} --yes
+      ignore_errors: yes
+
     - name: Create default site
-      shell: |        
-        sudo ee site create {{ tf_ip | quote }}
+      shell: |
+        sudo ee site create {{ tf_ip }}
 
     - name: Create soft link to easy-engine sites directory
-      shell: |        
-        ln -s /opt/easyengine/sites/ /home/{{ tf_ansible_username | quote }}/sites
+      shell: |
+        ln -sf /opt/easyengine/sites/ /home/{{ tf_ansible_username }}/sites
 
     - name: Remove default htdocs site directory
-      shell: |        
+      shell: |
         rm -rf /home/{{ tf_ansible_username }}/sites/{{ tf_ip }}/app/htdocs
 
-    - name: Download the repository [bitbucket]
-      git:        
-        repo: 'https://x-token-auth:{{ tf_repo_access_token }}@bitbucket.org/{{ tf_frontend_repo }}.git'
+    - name: Download the repository [github]
+      git:
+        repo: 'https://x-token-auth:{{ tf_repo_access_token }}@github.com/{{ tf_frontend_repo }}.git'
         dest: /home/{{ tf_ansible_username }}/sites/{{ tf_ip }}/app/htdocs/
         #depth: '1'
         force: yes
-        #accept_hostkey: yes        
+        #accept_hostkey: yes
 
     - name: Reload default site
       shell: |
-        ee site reload {{ tf_ip | quote }}
+        ee site reload {{ tf_ip }}
 
     - name: Set email in easy-engine config for wildcard-SSL validation
       shell: |
-        ee config set le-mail {{ tf_mail | quote }}
+        ee config set le-mail {{ tf_mail }}
 
     - name: Set cloudflare global api key in easy-engine config for wildcard-SSL validation
-      shell: |        
-        ee config set cloudflare-api-key {{ tf_cf_global_api | quote }}
+      shell: |
+        ee config set cloudflare-api-key {{ tf_cf_global_api }}
+
+    - name: Delete site domain if exists
+      shell: |
+        sudo ee site delete {{ tf_domain }} --yes
+      ignore_errors: yes
 
     - name: Create domain site using let's encrypt's wildcard certificate
       shell: |
-        sudo ee site create {{ tf_domain | quote  }} --ssl=le --wildcard
+        sudo ee site create {{ tf_domain  }} --ssl=le --wildcard
 
     - name: Verify wildcard SSL cert with DNS method using cloudflare global api key
-      shell: |        
-        ee site ssl-verify {{ tf_domain | quote }}
+      shell: |
+        ee site ssl-verify {{ tf_domain }}
 
     - name: Remove default htdocs site directory
-      shell: |        
+      shell: |
         rm -rf /home/{{ tf_ansible_username }}/sites/{{ tf_domain }}/app/htdocs
 
-    - name: Download the repository [bitbucket]
+    - name: Download the repository [github]
       git:
-        repo: 'https://x-token-auth:{{ tf_repo_access_token }}@bitbucket.org/{{ tf_frontend_repo }}.git'
+        repo: 'https://x-token-auth:{{ tf_repo_access_token }}@github.com/{{ tf_frontend_repo }}.git'
         dest: /home/{{ tf_ansible_username }}/sites/{{ tf_domain }}/app/htdocs/
         #depth: '1'
         force: yes
-        #accept_hostkey: yes        
+        #accept_hostkey: yes
 
     - name: Reload default site
       shell: |
